@@ -1,0 +1,583 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>0/1 Knapsack Demo</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Syne:wght@400;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0f0f13;
+    --surface: #1a1a24;
+    --border: #2e2e42;
+    --accent: #7c6af7;
+    --accent2: #f7c96a;
+    --text: #e8e8f0;
+    --muted: #6b6b88;
+    --green: #5af78e;
+    --red: #f75a5a;
+    --cell-size: 48px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Syne', sans-serif;
+    min-height: 100vh;
+    padding: 32px 16px;
+  }
+
+  h1 {
+    font-size: 2rem;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+    text-align: center;
+    margin-bottom: 4px;
+  }
+
+  h1 span { color: var(--accent); }
+
+  .subtitle {
+    text-align: center;
+    color: var(--muted);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.78rem;
+    margin-bottom: 36px;
+  }
+
+  .container { max-width: 860px; margin: 0 auto; }
+
+  /* ── Panel ── */
+  .panel {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 24px;
+    margin-bottom: 20px;
+  }
+
+  .panel-title {
+    font-size: 0.7rem;
+    font-family: 'JetBrains Mono', monospace;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin-bottom: 16px;
+  }
+
+  /* ── Capacity ── */
+  .capacity-row {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+
+  .capacity-row label {
+    font-size: 0.9rem;
+    color: var(--muted);
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  input[type="number"] {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--text);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 1rem;
+    padding: 8px 12px;
+    width: 80px;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+
+  input[type="number"]:focus { border-color: var(--accent); }
+
+  /* ── Items ── */
+  .items-header {
+    display: grid;
+    grid-template-columns: 1fr 1fr 40px;
+    gap: 10px;
+    margin-bottom: 10px;
+  }
+
+  .items-header span {
+    font-size: 0.7rem;
+    font-family: 'JetBrains Mono', monospace;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+
+  .item-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr 40px;
+    gap: 10px;
+    margin-bottom: 8px;
+    animation: fadeIn 0.25s ease;
+  }
+
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: translateY(0); } }
+
+  .item-row input {
+    width: 100%;
+  }
+
+  .btn-icon {
+    background: none;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--red);
+    cursor: pointer;
+    font-size: 1rem;
+    transition: background 0.15s, border-color 0.15s;
+    display: flex; align-items: center; justify-content: center;
+  }
+
+  .btn-icon:hover { background: rgba(247,90,90,0.1); border-color: var(--red); }
+
+  /* ── Buttons ── */
+  .btn-row {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-top: 16px;
+  }
+
+  button {
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 0.85rem;
+    border-radius: 8px;
+    padding: 10px 20px;
+    cursor: pointer;
+    border: none;
+    transition: opacity 0.15s, transform 0.1s;
+  }
+
+  button:active { transform: scale(0.97); }
+
+  .btn-add {
+    background: transparent;
+    border: 1px solid var(--accent);
+    color: var(--accent);
+  }
+
+  .btn-add:hover { background: rgba(124,106,247,0.1); }
+
+  .btn-solve {
+    background: var(--accent);
+    color: #fff;
+    flex: 1;
+    min-width: 140px;
+  }
+
+  .btn-solve:hover { opacity: 0.88; }
+
+  .btn-reset {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--muted);
+  }
+
+  .btn-reset:hover { border-color: var(--text); color: var(--text); }
+
+  /* ── Result ── */
+  .result-box {
+    display: none;
+    animation: fadeIn 0.3s ease;
+  }
+
+  .result-box.show { display: block; }
+
+  .result-summary {
+    display: flex;
+    gap: 24px;
+    flex-wrap: wrap;
+    margin-bottom: 20px;
+  }
+
+  .stat {
+    flex: 1;
+    min-width: 120px;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 16px;
+    text-align: center;
+  }
+
+  .stat-val {
+    font-size: 2rem;
+    font-weight: 800;
+    color: var(--accent2);
+    display: block;
+    line-height: 1;
+    margin-bottom: 6px;
+  }
+
+  .stat-lbl {
+    font-size: 0.7rem;
+    font-family: 'JetBrains Mono', monospace;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+
+  /* ── Chosen items ── */
+  .chosen-list {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-bottom: 24px;
+  }
+
+  .chip {
+    background: rgba(90, 247, 142, 0.1);
+    border: 1px solid var(--green);
+    border-radius: 8px;
+    padding: 6px 14px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.8rem;
+    color: var(--green);
+    animation: fadeIn 0.3s ease;
+  }
+
+  /* ── DP Table ── */
+  .table-label {
+    font-size: 0.7rem;
+    font-family: 'JetBrains Mono', monospace;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin-bottom: 12px;
+  }
+
+  .table-scroll { overflow-x: auto; }
+
+  table {
+    border-collapse: collapse;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.78rem;
+  }
+
+  td, th {
+    width: var(--cell-size);
+    height: var(--cell-size);
+    text-align: center;
+    border: 1px solid var(--border);
+    transition: background 0.2s;
+    position: relative;
+  }
+
+  th {
+    background: var(--bg);
+    color: var(--muted);
+    font-weight: 600;
+  }
+
+  td.row-header {
+    background: var(--bg);
+    color: var(--muted);
+    font-weight: 600;
+  }
+
+  td.highlight {
+    background: rgba(124,106,247,0.25);
+    color: var(--accent);
+    font-weight: 700;
+  }
+
+  td.chosen-cell {
+    background: rgba(90, 247, 142, 0.2);
+    color: var(--green);
+    font-weight: 700;
+  }
+
+  td.traceback {
+    background: rgba(247,201,106,0.15);
+    color: var(--accent2);
+    font-weight: 700;
+  }
+
+  /* ── Legend ── */
+  .legend {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+    margin-top: 16px;
+  }
+
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.75rem;
+    font-family: 'JetBrains Mono', monospace;
+    color: var(--muted);
+  }
+
+  .legend-dot {
+    width: 14px; height: 14px;
+    border-radius: 4px;
+    flex-shrink: 0;
+  }
+
+  .error {
+    color: var(--red);
+    font-size: 0.8rem;
+    font-family: 'JetBrains Mono', monospace;
+    margin-top: 8px;
+    display: none;
+  }
+
+  .error.show { display: block; }
+</style>
+</head>
+<body>
+<div class="container">
+  <h1>0/1 <span>Knapsack</span></h1>
+  <p class="subtitle">dynamic programming · visualizer</p>
+
+  <!-- Setup -->
+  <div class="panel">
+    <div class="panel-title">Setup</div>
+
+    <div class="capacity-row">
+      <label>Knapsack capacity →</label>
+      <input type="number" id="capacity" value="10" min="1" max="50">
+    </div>
+
+    <div style="margin-top: 20px;">
+      <div class="items-header">
+        <span>Weight</span>
+        <span>Value</span>
+        <span></span>
+      </div>
+      <div id="items-container"></div>
+    </div>
+
+    <div class="error" id="error-msg"></div>
+
+    <div class="btn-row">
+      <button class="btn-add" onclick="addItem()">+ Add Item</button>
+      <button class="btn-reset" onclick="resetAll()">Reset</button>
+      <button class="btn-solve" onclick="solve()">Solve ▶</button>
+    </div>
+  </div>
+
+  <!-- Result -->
+  <div class="panel result-box" id="result-box">
+    <div class="panel-title">Result</div>
+
+    <div class="result-summary">
+      <div class="stat">
+        <span class="stat-val" id="res-value">—</span>
+        <span class="stat-lbl">Max Value</span>
+      </div>
+      <div class="stat">
+        <span class="stat-val" id="res-weight">—</span>
+        <span class="stat-lbl">Total Weight</span>
+      </div>
+      <div class="stat">
+        <span class="stat-val" id="res-count">—</span>
+        <span class="stat-lbl">Items Chosen</span>
+      </div>
+    </div>
+
+    <div class="table-label">Items selected</div>
+    <div class="chosen-list" id="chosen-list"></div>
+
+    <div class="table-label">DP Table  <span style="font-size:0.65rem;color:var(--muted)">(rows = items 0–n, cols = capacity 0–W)</span></div>
+    <div class="table-scroll">
+      <table id="dp-table"></table>
+    </div>
+
+    <div class="legend">
+      <div class="legend-item"><div class="legend-dot" style="background:rgba(124,106,247,0.3);border:1px solid var(--accent)"></div>Final answer cell</div>
+      <div class="legend-item"><div class="legend-dot" style="background:rgba(90,247,142,0.2);border:1px solid var(--green)"></div>Traceback (item taken)</div>
+      <div class="legend-item"><div class="legend-dot" style="background:rgba(247,201,106,0.15);border:1px solid var(--accent2)"></div>Traceback (item skipped)</div>
+    </div>
+  </div>
+</div>
+
+<script>
+  let items = [];
+
+  function addItem(w = '', v = '') {
+    const id = Date.now() + Math.random();
+    items.push({ id, w, v });
+    renderItems();
+  }
+
+  function removeItem(id) {
+    items = items.filter(i => i.id !== id);
+    renderItems();
+  }
+
+  function renderItems() {
+    const c = document.getElementById('items-container');
+    c.innerHTML = '';
+    if (items.length === 0) {
+      c.innerHTML = '<div style="color:var(--muted);font-size:0.8rem;font-family:\'JetBrains Mono\',monospace;padding:8px 0">No items yet — add some above.</div>';
+      return;
+    }
+    items.forEach((item, idx) => {
+      const row = document.createElement('div');
+      row.className = 'item-row';
+      row.innerHTML = `
+        <input type="number" placeholder="e.g. ${2+idx}" min="1" max="999"
+               value="${item.w}" onchange="items[${items.indexOf(item)}].w=this.value">
+        <input type="number" placeholder="e.g. ${3+idx*2}" min="0" max="9999"
+               value="${item.v}" onchange="items[${items.indexOf(item)}].v=this.value">
+        <button class="btn-icon" onclick="removeItem(${item.id})" title="Remove">✕</button>
+      `;
+      c.appendChild(row);
+    });
+  }
+
+  function showError(msg) {
+    const el = document.getElementById('error-msg');
+    el.textContent = msg;
+    el.classList.add('show');
+  }
+
+  function clearError() {
+    document.getElementById('error-msg').classList.remove('show');
+  }
+
+  function solve() {
+    clearError();
+
+    const W = parseInt(document.getElementById('capacity').value);
+    if (isNaN(W) || W < 1) { showError('Please enter a valid capacity ≥ 1.'); return; }
+
+    // Read current input values fresh
+    const rows = document.querySelectorAll('.item-row');
+    const parsedItems = [];
+    let valid = true;
+    rows.forEach((row, i) => {
+      const inputs = row.querySelectorAll('input');
+      const w = parseInt(inputs[0].value);
+      const v = parseInt(inputs[1].value);
+      if (isNaN(w) || w < 1 || isNaN(v) || v < 0) { valid = false; }
+      else parsedItems.push({ w, v, label: `Item ${i+1}` });
+    });
+
+    if (parsedItems.length === 0) { showError('Add at least one item.'); return; }
+    if (!valid) { showError('All weights must be ≥ 1 and values ≥ 0.'); return; }
+
+    const n = parsedItems.length;
+
+    // Build DP table
+    const dp = Array.from({ length: n + 1 }, () => new Array(W + 1).fill(0));
+
+    for (let i = 1; i <= n; i++) {
+      const { w, v } = parsedItems[i - 1];
+      for (let c = 0; c <= W; c++) {
+        if (w <= c) {
+          dp[i][c] = Math.max(dp[i-1][c], dp[i-1][c-w] + v);
+        } else {
+          dp[i][c] = dp[i-1][c];
+        }
+      }
+    }
+
+    // Traceback
+    const traceSet = new Set(); // "row,col"
+    const takenRows = new Set();
+    let ci = W;
+    for (let i = n; i > 0; i--) {
+      if (dp[i][ci] !== dp[i-1][ci]) {
+        traceSet.add(`${i},${ci}`);
+        takenRows.add(i - 1); // item index
+        ci -= parsedItems[i-1].w;
+      } else {
+        traceSet.add(`${i},${ci}`); // skipped
+      }
+    }
+
+    // Stats
+    let totalW = 0, totalV = 0;
+    const chosen = [];
+    takenRows.forEach(idx => {
+      totalW += parsedItems[idx].w;
+      totalV += parsedItems[idx].v;
+      chosen.push({ ...parsedItems[idx], idx });
+    });
+
+    document.getElementById('res-value').textContent = dp[n][W];
+    document.getElementById('res-weight').textContent = totalW + ' / ' + W;
+    document.getElementById('res-count').textContent = chosen.length;
+
+    // Chosen chips
+    const cl = document.getElementById('chosen-list');
+    cl.innerHTML = '';
+    if (chosen.length === 0) {
+      cl.innerHTML = '<span style="color:var(--muted);font-family:\'JetBrains Mono\',monospace;font-size:0.8rem">None fit.</span>';
+    } else {
+      chosen.sort((a,b) => a.idx - b.idx).forEach(it => {
+        const chip = document.createElement('div');
+        chip.className = 'chip';
+        chip.textContent = `${it.label}  w:${it.w}  v:${it.v}`;
+        cl.appendChild(chip);
+      });
+    }
+
+    // Render table
+    const table = document.getElementById('dp-table');
+    table.innerHTML = '';
+
+    // Header row
+    const thead = document.createElement('tr');
+    thead.appendChild(Object.assign(document.createElement('th'), { textContent: '' }));
+    for (let c = 0; c <= W; c++) {
+      const th = document.createElement('th');
+      th.textContent = c;
+      thead.appendChild(th);
+    }
+    table.appendChild(thead);
+
+    for (let i = 0; i <= n; i++) {
+      const tr = document.createElement('tr');
+      const rh = document.createElement('td');
+      rh.className = 'row-header';
+      rh.textContent = i === 0 ? '∅' : `I${i}`;
+      tr.appendChild(rh);
+
+      for (let c = 0; c <= W; c++) {
+        const td = document.createElement('td');
+        td.textContent = dp[i][c];
+        const key = `${i},${c}`;
+        if (i === n && c === W) {
+          td.classList.add('highlight');
+        } else if (traceSet.has(key) && takenRows.has(i - 1) && i > 0) {
+          td.classList.add('chosen-cell');
+        } else if (traceSet.has(key) && i > 0) {
+          td.classList.add('traceback');
+        }
+        tr.appendChild(td);
+      }
+      table.appendChild(tr);
+    }
+
+    document.getElementById('result-box').classList.add('show');
+    document.getElementById('result-box').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  function resetAll() {
+    items = [];
+    renderItems();
+    document.getElementById('capacity').value = 10;
+    document.getElementById('result-box').classList.remove('show');
+    clearError();
+  }
+
+  // Preload 5 sample items
+  [[3,4],[4,5],[2,3],[6,9],[1,2]].forEach(([w,v]) => addItem(w, v));
+</script>
+</body>
+</html>
