@@ -1,4 +1,4 @@
-# 🎒 Knapsack Visualizer & Solver
+# Knapsack Visualizer & Solver
 
 An interactive web application that visualizes the **0/1 Knapsack Problem** using Dynamic Programming, complete with a C++ console implementation that compares **Fractional** vs **0/1** knapsack approaches.
 
@@ -11,7 +11,7 @@ An interactive web application that visualizes the **0/1 Knapsack Problem** usin
 - ✅ **Real-time Results** - Displays max value, total weight, and selected items
 - ✅ **Responsive Design** - Works on desktop and tablet devices
 
-### C++ Console Solver (`knapsack_solver.cpp`)
+### C++ Console Solver (`code.cpp`)
 - ✅ **0/1 Knapsack** - Dynamic programming approach
 - ✅ **Fractional Knapsack** - Greedy algorithm with value/weight ratio
 - ✅ **DP Table Print** - Displays the complete DP matrix
@@ -36,7 +36,6 @@ The knapsack problem is a classic optimization problem:
 ### Web Visualizer
 1. Clone the repository:
 ```bash
-git clone https://github.com/yourusername/Knapsack-Visualizer-and-Solver.git
 cd Knapsack-Visualizer-and-Solver
 Open index.html in your browser:
 
@@ -64,13 +63,13 @@ bash
 knapsack.exe
 How to Use
 Web Interface
-Set Capacity - Enter the knapsack's weight limit
+**Set Capacity** - Enter the knapsack's weight limit
 
-Add Items - Click "+ Add Item" to add items with weight and value
+**Add Items** - Click "+ Add Item" to add items with weight and value
 
-Solve - Click "Solve ▶" to compute the optimal solution
+**Solve** - Click "Solve ▶" to compute the optimal solution
 
-Explore - View the DP table with color-coded cells:
+**Explore** - View the DP table with color-coded cells:
 
 🟣 Purple - Final answer cell
 
@@ -133,13 +132,13 @@ Color	Meaning
 ### Technologies Used
 Frontend: HTML5, CSS3, JavaScript (ES6)
 
-Styling: Custom CSS with CSS Grid & Flexbox
+**Styling:** Custom CSS with CSS Grid & Flexbox
 
-Fonts: Google Fonts (JetBrains Mono, Syne)
+**Fonts:** Google Fonts (JetBrains Mono, Syne)
 
-Backend Logic: Pure JavaScript (no frameworks)
+**Backend Logic:** Pure JavaScript (no frameworks)
 
-Console: C++17 with STL
+**Console:** C++17 with STL
 
 ## Example Walkthrough
 ### Problem Instance:
