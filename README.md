@@ -2,6 +2,7 @@
 
 An interactive web application that visualizes the **0/1 Knapsack Problem** using Dynamic Programming, complete with a C++ console implementation that compares **Fractional** vs **0/1** knapsack approaches.
 
+## [Report](https://drive.google.com/file/d/16LXj_VTuNGKE7WTsPKJjger_uZVoox63/view?usp=sharing)
 ## Features
 
 ### Web Visualizer (`index.html`)
